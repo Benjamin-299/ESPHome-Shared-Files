@@ -1,0 +1,53 @@
+esphome:
+  #on_boot:
+
+#device specific settings:
+esp32:
+  board: m5stack-atom
+  framework:
+    type: arduino
+
+
+# Built-in Serial Peripheral Interface (SPI):
+spi:
+  clk_pin: GPIO23
+  mosi_pin: GPIO19
+
+# Built-in I2C Bus:
+# Bus_external is for devices connected via the HAT pin.
+i2c:
+  - id: i2c_internal
+    sda: GPIO25
+    scl: GPIO21
+    scan: true
+
+light:
+  - platform: fastled_clockless
+    chipset: WS2812B
+    pin: 
+      number: GPIO27
+    num_leds: 1
+    rgb_order: GRB
+    id: button_light
+    name: Button Light
+    default_transition_length: 25ms
+    effects:
+      - random:
+      - flicker:
+      - addressable_rainbow:
+      - pulse:
+
+
+# Built-in infrared transmitter. See https://esphome.io/components/remote_transmitter.html and https://m5stack.hackster.io/alessandro-polselli/turn-m5stickc-into-universal-ir-remote-home-automation-d3ec0d
+remote_transmitter:
+  pin: GPIO9
+  carrier_duty_percent: 50%
+
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO39
+      inverted: true
+    id: button1
+    name: Main Button

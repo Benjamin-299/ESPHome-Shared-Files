@@ -1,0 +1,128 @@
+esphome:
+  #on_boot:
+  
+#device specific settings:
+esp32:
+  board: m5stick-c
+  framework:
+    type: arduino
+
+output:
+  - platform: gpio
+    pin: 
+      number: GPIO10
+      allow_other_uses: true
+    id: gpio_10
+
+# Built-in Serial Peripheral Interface (SPI):
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO15
+
+# Built-in I2C Bus:
+# Bus_external is for devices connected via the HAT pin.
+i2c:
+  - id: i2c_internal
+    sda: 21
+    scl: 22
+    scan: true
+  - id: i2c_external
+    sda: 0
+    scl: 
+      number: 26
+      allow_other_uses: true
+    scan: true
+
+# Built-in infrared transmitter:
+  # https://m5stack.hackster.io/alessandro-polselli/turn-m5stickc-into-universal-ir-remote-home-automation-d3ec0d
+remote_transmitter:
+  pin: GPIO9
+  carrier_duty_percent: 50%
+
+# Built-in Red Status LED Light:
+light:
+  - platform: status_led
+    name: "LED Light"
+    id: led_light
+    restore_mode: ALWAYS_OFF
+    pin: 
+      number: GPIO10
+      allow_other_uses: true
+      inverted: true 
+
+  #LED Backlight for Mech Key
+  - platform: neopixelbus
+    id: key_light
+    name: "Key Backlight"
+    type: GRB
+    variant: SK6812
+    pin: GPIO32
+    num_leds: 4
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 50ms
+
+# output:
+#   - platform: ledc
+#     pin: GPIO47
+#     id: backlight_output
+
+#   - platform: monochromatic
+#     id: backlight_test
+#     name: Backlight Control
+#     entity_category: config
+#     output: backlight_output
+#     restore_mode: ALWAYS_ON
+
+
+binary_sensor:
+# Built-in buttons:
+  #button A (Main/Big)
+  - platform: gpio
+    pin:
+      number: GPIO37
+      inverted: true
+    id: button_a
+    name: Main Button
+    on_press:
+      then:
+        - homeassistant.service:
+            service: homeassistant.toggle
+            data:
+              entity_id: ${busy_flag_local}
+
+  #button B (Small/Right)
+  - platform: gpio
+    pin:
+      number: GPIO39
+      inverted: true
+    id: button_b
+    name: Side Button
+    on_press: 
+      then:
+        - switch.toggle: screen_power
+
+  #Mech. Key Switch (used for headset detection)
+  - platform: gpio
+    pin:
+      number: GPIO33
+      inverted: true
+    id: ext_key
+    name: Key Switch
+    filters:
+      - delayed_on: 500ms
+      - delayed_off: 1500ms
+
+#Various Other Sensors:
+sensor:
+# Power Controll apx192?
+  - platform: axp192
+    address: 0x34
+    i2c_id: i2c_internal
+    update_interval: 120s
+    # Sensors in this apx192 platform:
+    battery_level:
+      id: device_battery
+      name: "Battery"
+    #Brightness control
+    brightness: .4
+

@@ -1,0 +1,52 @@
+light:
+  #Overall light control - required to partition light into each LED
+  #Partition Light Source:
+  - platform: neopixelbus
+    id: ext_led #ID here is referenced by partitions
+    name: EXT LED
+    pin:
+      number: GPIO26
+    variant: SK6812
+    default_transition_length: 25ms
+    num_leds: 3
+    effects:
+      - addressable_rainbow:
+      - addressable_color_wipe:
+      - addressable_scan:
+      - addressable_twinkle:
+      - pulse:
+    internal: true # hides control from frontend
+  
+  #Partitions - Allow control of each individual light. 
+  - platform: partition
+    name: "LED 1"
+    id: led_1
+    default_transition_length: 25ms
+    effects:
+      - pulse:
+    segments:
+      - id: ext_led #root device
+        from: 0
+        to: 0
+  
+  - platform: partition
+    name: "LED 2"
+    id: led_2
+    effects:
+      - pulse:
+    default_transition_length: 25ms
+    segments:
+      - id: ext_led #root device
+        from: 1
+        to: 1
+  
+  - platform: partition
+    name: "LED 3"
+    id: led_3
+    effects:
+      - pulse:
+    default_transition_length: 25ms
+    segments:
+      - id: ext_led #root device
+        from: 2
+        to: 2
