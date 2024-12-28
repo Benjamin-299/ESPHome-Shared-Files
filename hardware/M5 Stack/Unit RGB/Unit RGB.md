@@ -15,5 +15,5 @@ This is a very useful piece of hardware for a STEM class, students can program i
 * 1x Grove Cable
 
 
-M5Core(GROVE B)	GPIO36	GPIO26	5V	GND
-RGB Unit		Signal Pin	5V	GND
+|M5Core(GROVE B)|GPIO36|GPIO26|5V|GND
+RGB Unit|Signal Pin|5V|GND
